@@ -154,18 +154,19 @@ void AxManager::loadData()
 
     /**************************************************************/
        //先读第一个部门的数据，即C列
-    for (char x('C'); x < 'F'; ++x) {
+    for (char x('C'); x <= 'F'; ++x) {
         auto hash = getHash(x);
-        for (int row = 1; row < iRows; ++row) {
+        for (int row = 1; row <= iRows; ++row) {
             //——————————————读出数据—————————————
             QAxObject *range = worksheet->querySubObject("Range(QString)", QString("%1%2").arg(x).arg(row));
             QString value = range->property("Value").toString();
 
             //如果目标值小于等于0（可能不是数字）就不管
             bool ret;
-            if (value.toDouble(&ret) == 0) {
+            if (qFuzzyIsNull(value.toDouble(&ret))) {
                 if (ret == false)
                     continue;
+                continue;
             }
             QAxObject *range1 = worksheet->querySubObject("Range(QString)", QString("A%1").arg(row));
             QString menu = range1->property("Value").toString();
@@ -185,7 +186,7 @@ void AxManager::writeData(int index)
   
     auto h = getHash(index);
     auto hash = *h;
-    for (int row = 1; row < iRows; ++row) {
+    for (int row = 1; row <= iRows; ++row) {
         //遍历保存的key也就是总表的编码
         //读出目标文件的A列即编码value
         QAxObject *range2 = worksheet->querySubObject("Range(QString)", QString("%1%2").arg('A').arg(row));
@@ -203,15 +204,6 @@ void AxManager::writeData(int index)
             }
         }
     }
-
-        ////—————————————写入数据—————————————
-        //QAxObject *range2 = worksheet->querySubObject("Range(QString)", QString("%1%2").arg(1).arg(2));
-        ////写入数据, 第6行，第6列
-        //range2->setProperty("Value", "中共十九大");
-        //QString newStr = "";
-        //newStr = range2->property("Value").toString();
-        //qDebug() << "写入数据后，第6行，第6列的数据为：" + newStr;
-    //}
 }
 
 QHash<QString, QString> * AxManager::getHash(char x)
