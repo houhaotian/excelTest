@@ -13,8 +13,6 @@ public:
 
     AxManager(QObject *parent = 0);
     ~AxManager();
-    bool Test(QString &path);
-
 
     QString ConvertFromNumber(int number)
     {
@@ -40,7 +38,7 @@ public:
 private:
     QHash<QString, QString> *getHash(char x);
     QHash<QString, QString> *getHash(int index);
-    char getAimColumn(int index);
+
 private:
     //存编号，目标值
     QHash<QString, QString> m_hash1;//对应C列数据

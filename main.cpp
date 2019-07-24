@@ -1,20 +1,24 @@
 #include <QtWidgets/QApplication>
 #include "AxManager.h"
 #include "SplashScreen.h"
-
+#include <QDesktopServices>
+#include <QDebug>
 #pragma execution_character_set("utf-8")
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-
     SplashScreen splash;
     splash.show();
     AxManager *axm = new AxManager;
     splash.setProgress(1);
     splash.setText("申请资源");
+
+    QString deskTopPath = QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).first();
+    QString path(deskTopPath);
+    path.append("/test/sum");
     //这一套可以把所有东西放到内存
-    axm->openExcelFile(QString("c:/Users/houha/Desktop/test/sum.xls"));
+    axm->openExcelFile(path);
     splash.setProgress(10);
     splash.setText("打开文件");
     axm->setSheetIndex(1);
@@ -26,7 +30,9 @@ int main(int argc, char *argv[])
     splash.setProgress(35);
     splash.setText("关闭源文件");
 
-    axm->openExcelFile(QString("c:/Users/houha/Desktop/test/wanted.xlsx"));
+    path = deskTopPath;
+    path.append("/test/wanted");
+    axm->openExcelFile(path);
     splash.setProgress(40);
     splash.setText("打开目标文件");
     for (int i = 1; i <= 4; ++i) {
