@@ -1,53 +1,77 @@
-#include <QtWidgets/QApplication>
+ï»¿#include <QtWidgets/QApplication>
 #include "AxManager.h"
 #include "SplashScreen.h"
 #include <QDesktopServices>
 #include <QDebug>
+#include <QMutex>
+#include <QFile>
+#include <QTextStream>
+
 #pragma execution_character_set("utf-8")
+
+
+void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    static QMutex mutex;
+    QMutexLocker locker(&mutex);
+
+   // QByteArray localMsg = msg.toLocal8Bit();
+    const char *file = context.file ? context.file : "";
+    const char *function = context.function ? context.function : "";
+    QFile aimFile("log.txt");
+
+    aimFile.open(QIODevice::WriteOnly | QIODevice::Append);
+
+    QTextStream text_stream(&aimFile);
+    text_stream << /*localMsg.constData()*/msg << QString("(%1:%2,%3)").arg(file).arg(context.line).arg(function)<<"\r\n";
+    aimFile.flush();
+    aimFile.close();
+}
 
 int main(int argc, char *argv[])
 {
+    qInstallMessageHandler(myMessageOutput);
+
     QApplication a(argc, argv);
     SplashScreen splash;
     splash.show();
     AxManager *axm = new AxManager;
     splash.setProgress(1);
-    splash.setText("ÉêÇë×ÊÔ´");
+    splash.setText("ç”³è¯·èµ„æº");
 
     QString deskTopPath = QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).first();
     QString path(deskTopPath);
     path.append("/test/sum");
-    //ÕâÒ»Ì×¿ÉÒÔ°ÑËùÓÐ¶«Î÷·Åµ½ÄÚ´æ
+    //è¿™ä¸€å¥—å¯ä»¥æŠŠæ‰€æœ‰ä¸œè¥¿æ”¾åˆ°å†…å­˜
     axm->openExcelFile(path);
     splash.setProgress(10);
-    splash.setText("´ò¿ªÎÄ¼þ");
+    splash.setText("æ‰“å¼€æ–‡ä»¶");
     axm->setSheetIndex(1);
     axm->loadData();
     splash.setProgress(30);
-    splash.setText("È«²¿Êý¾Ý¶ÁÈ¡Íê±Ï");
+    splash.setText("å…¨éƒ¨æ•°æ®è¯»å–å®Œæ¯•");
 
     axm->closeExcelFile();
     splash.setProgress(35);
-    splash.setText("¹Ø±ÕÔ´ÎÄ¼þ");
+    splash.setText("å…³é—­æºæ–‡ä»¶");
 
     path = deskTopPath;
     path.append("/test/wanted");
     axm->openExcelFile(path);
     splash.setProgress(40);
-    splash.setText("´ò¿ªÄ¿±êÎÄ¼þ");
+    splash.setText("æ‰“å¼€ç›®æ ‡æ–‡ä»¶");
     for (int i = 1; i <= 4; ++i) {
         axm->setSheetIndex(i);
         axm->writeData(i);
         int process = 40 + 10 * i;
         splash.setProgress(process);
-        splash.setText(QString("Ð´ÈëµÚ%1¸öÎÄ¼þ").arg(i));
+        splash.setText(QString("å†™å…¥ç¬¬%1ä¸ªæ–‡ä»¶").arg(i));
         if (i == 4) {
             splash.setProgress(99);
-            splash.setText(QString("Ö´ÐÐÍê±Ï£¬Çëµã»÷È·¶¨"));
+            splash.setText(QString("æ‰§è¡Œå®Œæ¯•ï¼Œè¯·ç‚¹å‡»ç¡®å®š"));
         }
     }
    
     axm->closeExcelFile();
-
     return 0;
 }

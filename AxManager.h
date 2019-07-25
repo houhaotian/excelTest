@@ -35,6 +35,7 @@ public:
     void loadData();
     void writeData(int index);
 
+
 private:
     QHash<QString, QString> *getHash(char x);
     QHash<QString, QString> *getHash(int index);

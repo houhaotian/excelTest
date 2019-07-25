@@ -1,6 +1,8 @@
 ﻿#include "AxManager.h"
 #include <QAxObject>
 #include <QDebug>
+#include <QMessageBox>
+#include <QApplication>
 
 #pragma execution_character_set("utf-8")
 
@@ -28,6 +30,11 @@ int AxManager::openExcelFile(const QString &path)
     const char* info = str.c_str();
 
     Q_ASSERT_X(workbook!=nullptr,"openExcelFile",info);
+    if (workbook == nullptr) {
+
+        QMessageBox::warning((QWidget *)(0), "ERROR", info, QMessageBox::Abort);
+        std::abort();
+    }
     // 获取打开的excel文件中所有的工作sheet
     worksheets = workbook->querySubObject("WorkSheets");
 
@@ -55,9 +62,8 @@ bool AxManager::closeExcelFile()
     {
         delete excel;
         excel = NULL;
-        qDebug() << "close?";
     }
-    qDebug() << "close!";
+    qDebug() << "closeFile success";
     return true;
 }
 
